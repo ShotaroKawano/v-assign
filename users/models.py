@@ -39,14 +39,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
-    role_id = models.ForeignKey(
+    role = models.ForeignKey(
         Role,
         verbose_name=_('role'),
         null=True,
         help_text=_('Specific Roles for this user.'),
         related_name="user_set",
         related_query_name="user",
-        on_delete=False,
+        on_delete=models.PROTECT,
     )
     # role_id = models.IntegerField(_('role id'), null=True)
     unit_price = models.IntegerField(_('unit price(万円/月)'), null=True)

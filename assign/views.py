@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User
 from users.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import BoardModel
+from .models import Notification
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -35,7 +35,7 @@ def loginfunc(request):
 
 @login_required
 def listfunc(request):
-    object_list = BoardModel.objects.all()
+    object_list = Notification.objects.all()
     return render(request, 'list.html', {'object_list': object_list})
 
 
@@ -45,5 +45,5 @@ def logoutfunc(request):
 
 
 def detailfunc(request, pk):
-    object = BoardModel.objects.get(pk=pk)
+    object = Notification.objects.get(pk=pk)
     return render(request, 'detail.html', {'object': object})
