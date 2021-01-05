@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
     'assign',
 ]
 
@@ -126,4 +127,4 @@ STATICFILES_DIRS = [
 
 LOGIN_URL = 'login'
 
-AUTH_USER_MODEL = 'assign.User'
+AUTH_USER_MODEL = 'users.User'
