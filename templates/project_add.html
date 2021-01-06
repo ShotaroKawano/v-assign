@@ -16,11 +16,14 @@
     </p>
     <p>
       <label for="id_start_date">Start date:</label>
-      <input type="text" name="start_date" required id="id_start_date">
+      <!-- <input type="text" name="start_date" required id="id_start_date"> -->
+      <!-- <input type="date" name="start_date" min="2020-01-01" max="2030-12-31" required id="id_start_date"> -->
+      <input type="month" name="start_date" min="2020-01" max="2030-12" required id="id_start_date">
     </p>
     <p>
       <label for="id_end_date">End date:</label>
-      <input type="text" name="end_date" required id="id_end_date">
+      <!-- <input type="text" name="end_date" required id="id_end_date"> -->
+      <input type="month" name="end_date" min="2020-01" max="2030-12" required id="id_start_date">
     </p>
     <p>
       <label for="id_phase">Phase:</label>

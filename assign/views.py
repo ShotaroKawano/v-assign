@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Notification, ProjectPhase, Project, ProjectMember, MonthlyWorkingTime
 from django.contrib.auth.decorators import login_required
 from . import forms
+import datetime
 
 
 # Create your views here.
@@ -80,8 +81,8 @@ def project_detailfunc(request, pk):
     if request.method == 'POST':
         # リクエストから入力値を取得
         name = request.POST['name']
-        start_date = request.POST['start_date']
-        end_date = request.POST['end_date']
+        start_date = request.POST['start_date'] + '-01'
+        end_date = request.POST['end_date'] + '-01'
         phase = request.POST['phase']
         manager = request.POST.getlist('manager')
         staff = request.POST.getlist('staff')
@@ -170,8 +171,8 @@ def project_addfunc(request):
     if request.method == 'POST':
         # リクエストから入力値を取得
         name = request.POST['name']
-        start_date = request.POST['start_date']
-        end_date = request.POST['end_date']
+        start_date = request.POST['start_date'] + '-01'
+        end_date = request.POST['end_date'] + '-01'
         phase = request.POST['phase']
         manager =  request.POST.getlist('manager')
         staff = request.POST.getlist('staff')
@@ -199,11 +200,15 @@ def project_resourcefunc(request, pk):
     # member_list = project.user.all()
     project_member_list = ProjectMember.objects.filter(project_id=project.id)
     project_member_id_list = [item.id for item in project_member_list]
+    start_date = project.start_date
+    end_date = project.end_date
+
     monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
     return render(request, 'project_resource.html', {
         'project': project,
         # 'member_list': member_list,
         'monthly_working_time_list': monthly_working_time_list,
+        # 'project_month_list': project_month_list,
         })
 
 

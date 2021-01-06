@@ -26,8 +26,10 @@ class ProjectPhase(models.Model):
 class Project(models.Model):
     """案件"""
     name = models.CharField(max_length=200)
-    start_date = models.IntegerField()
-    end_date = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    # start_date = models.CharField(max_length=10)
+    # end_date = models.CharField(max_length=10)
     phase = models.ForeignKey(ProjectPhase, on_delete=models.PROTECT)
     user = models.ManyToManyField(
         User,
@@ -62,7 +64,7 @@ class ProjectMember(models.Model):
 class MonthlyWorkingTime(models.Model):
     """月次の稼働時間の予定と実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
-    target_month = models.IntegerField()
+    target_month = models.DateField()
     planed_working_time = models.IntegerField()
     actual_working_time = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,8 +77,8 @@ class MonthlyWorkingTime(models.Model):
 class DailyWorkingTime(models.Model):
     """日次の稼働時間の実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
-    target_day = models.IntegerField()
-    target_month = models.IntegerField()
+    target_day = models.DateField()
+    target_month = models.DateField()
     working_time = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
