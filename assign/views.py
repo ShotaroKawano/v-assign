@@ -27,7 +27,7 @@ def loginfunc(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('list')
+            return redirect('menu')
         else:
             return redirect('login')
     return render(request, 'login.html')
@@ -54,6 +54,7 @@ def projectfunc(request):
     project_list = Project.objects.all()
     return render(request, 'project.html', {'project_list': project_list})
 
+
 @login_required
 def project_detailfunc(request, pk):
     project = Project.objects.get(pk=pk)
@@ -61,6 +62,28 @@ def project_detailfunc(request, pk):
 
 
 @login_required
+def project_addfunc(request):
+    return render(request, 'project_add.html')
+
+
+@login_required
 def project_resourcefunc(request, pk):
     project = Project.objects.get(pk=pk)
     return render(request, 'project_resource.html', {'project': project})
+
+
+@login_required
+def memberfunc(request):
+    member_list = User.objects.all()
+    return render(request, 'member.html', {'member_list': member_list})
+
+
+@login_required
+def member_resourcefunc(request, pk):
+    member = User.objects.get(pk=pk)
+    return render(request, 'member_resource.html', {'member': member})
+
+
+@login_required
+def working_timefunc(request):
+    return render(request, 'working_time.html')
