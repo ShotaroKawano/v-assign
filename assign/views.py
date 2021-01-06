@@ -33,6 +33,11 @@ def loginfunc(request):
     return render(request, 'login.html')
 
 
+def logoutfunc(request):
+    logout(request)
+    return redirect('login')
+
+
 @login_required
 def menufunc(request):
     return render(request, 'menu.html')
@@ -55,11 +60,7 @@ def project_detailfunc(request, pk):
     return render(request, 'project_detail.html', {'project': project})
 
 
-def logoutfunc(request):
-    logout(request)
-    return redirect('login')
-
-
-def detailfunc(request, pk):
-    object = Notification.objects.get(pk=pk)
-    return render(request, 'detail.html', {'object': object})
+@login_required
+def project_resourcefunc(request, pk):
+    project = Project.objects.get(pk=pk)
+    return render(request, 'project_resource.html', {'project': project})
