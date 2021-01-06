@@ -18,5 +18,6 @@
     <a href="{% url 'project_resource' project.pk %}" class="btn btn-primary btn active" role="button" aria-pressed="true">リソース管理</a>
   </div>
   {% endfor %}
+  <a href="{% url 'project_add' %}" class="btn btn-primary btn active" role="button" aria-pressed="true">追加</a>
 </div>
 {% endblock content %}
