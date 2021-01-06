@@ -12,5 +12,11 @@
   <div class="alert alert-success" role="alert">
     <p>{{ project.name }} [{{ project.start_date }} - {{ project.end_date }}] {{ project.phase }}</p>
   </div>
+  <!-- {% for member in member_list %}
+  {{ member.username }}
+  {% endfor %} -->
+  {% for monthly_working_time in monthly_working_time_list %}
+  {{ monthly_working_time.target_month }}
+  {% endfor %}
+  {% endblock content %}
 </div>
-{% endblock content %}

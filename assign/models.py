@@ -11,7 +11,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '[Alert]' + self.content
+        return '[Alert] ' + self.content
 
 
 
@@ -26,8 +26,8 @@ class ProjectPhase(models.Model):
 class Project(models.Model):
     """案件"""
     name = models.CharField(max_length=200)
-    start_date = models.CharField(max_length=10)
-    end_date = models.CharField(max_length=10)
+    start_date = models.IntegerField()
+    end_date = models.IntegerField()
     phase = models.ForeignKey(ProjectPhase, on_delete=models.PROTECT)
     user = models.ManyToManyField(
         User,
@@ -37,7 +37,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name + '[' + self.start_date + '-' + self.end_date + ']'
+        return self.name + ' [' + self.start_date + '-' + self.end_date + '] '
 
 
 class ProjectMember(models.Model):
@@ -56,27 +56,27 @@ class ProjectMember(models.Model):
 
 
     def __str__(self):
-        return self.project.name + '|' + self.user.username
+        return self.project.name + ' | ' + self.user.username
 
 
 class MonthlyWorkingTime(models.Model):
     """月次の稼働時間の予定と実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
-    target_month = models.CharField(max_length=10)
+    target_month = models.IntegerField()
     planed_working_time = models.IntegerField()
     actual_working_time = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.project_member + self.target_month
+        return self.project_member.project.name + ' | ' + self.project_member.user.username + ' | ' + self.target_month
 
 
 class DailyWorkingTime(models.Model):
     """日次の稼働時間の実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
-    target_day = models.CharField(max_length=10)
-    target_month = models.CharField(max_length=10)
+    target_day = models.IntegerField()
+    target_month = models.IntegerField()
     working_time = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

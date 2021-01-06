@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User
 from users.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Notification, ProjectPhase, Project, ProjectMember
+from .models import Notification, ProjectPhase, Project, ProjectMember, MonthlyWorkingTime
 from django.contrib.auth.decorators import login_required
 from . import forms
 
@@ -154,7 +154,6 @@ def project_detailfunc(request, pk):
         return render(request, 'project.html', {'project_list': project_list})
 
 
-
 @login_required
 def project_addfunc(request):
     if request.method == 'GET':
@@ -197,7 +196,15 @@ def project_addfunc(request):
 @login_required
 def project_resourcefunc(request, pk):
     project = Project.objects.get(pk=pk)
-    return render(request, 'project_resource.html', {'project': project})
+    # member_list = project.user.all()
+    project_member_list = ProjectMember.objects.filter(project_id=project.id)
+    project_member_id_list = [item.id for item in project_member_list]
+    monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+    return render(request, 'project_resource.html', {
+        'project': project,
+        # 'member_list': member_list,
+        'monthly_working_time_list': monthly_working_time_list,
+        })
 
 
 @login_required
