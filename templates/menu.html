@@ -4,10 +4,7 @@
 {% endblock customcss %}
 
 {% block header %}
-<div class="alert alert-primary" role="alert">
   <h1>メニュー</h1>
-  <a href="{% url 'logout' %}">ログアウト</a>
-</div>
 {% endblock header %}
 
 {% block content %}
@@ -18,11 +15,11 @@
   <a href="{% url 'project' %}">
     <div class="alert alert-success" role="alert">案件管理</div>
   </a>
-  <a href="#">
+  <a href="{% url 'member' %}">
     <div class="alert alert-success" role="alert">メンバー管理</div>
   </a>
-  <a href="#">
-    <div class="alert alert-success" role="alert">勤怠実績</div>
+  <a href="{% url 'working_time' %}">
+    <div class="alert alert-success" role="alert">稼働実績</div>
   </a>
 </div>
 {% endblock content %}

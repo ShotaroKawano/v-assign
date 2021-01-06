@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% endblock customcss %}
+
+{% block header %}
+<div class="alert alert-primary" role="alert">
+  <h1>メンバーリスト</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+  {% for member in member_list %}
+  <div class="alert alert-success" role="alert">
+    <p>{{ member.username }}</p>
+    <a href="{% url 'member_resource' member.pk %}" class="btn btn-primary btn active" role="button" aria-pressed="true">詳細</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock content %}
