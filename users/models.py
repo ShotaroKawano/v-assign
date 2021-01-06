@@ -39,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     full_name = models.CharField(_('full name'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=True)
+    is_management = models.BooleanField(default=False)
     role = models.ForeignKey(
         Role,
         verbose_name=_('role'),

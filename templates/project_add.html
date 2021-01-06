@@ -4,14 +4,45 @@
 {% endblock customcss %}
 
 {% block header %}
-<div class="alert alert-primary" role="alert">
-  <h1>案件追加</h1>
-</div>
+<h1>案件追加</h1>
 {% endblock header %}
 
 {% block content %}
 <div class="container">
-  <div class="alert alert-success" role="alert">
-  </div>
+  <form action="" method="POST">{% csrf_token %}
+    <p>
+      <label for="id_name">Name:</label>
+      <input type="text" name="name" required id="id_name">
+    </p>
+    <p>
+      <label for="id_start_date">Start date:</label>
+      <input type="text" name="start_date" required id="id_start_date">
+    </p>
+    <p>
+      <label for="id_end_date">End date:</label>
+      <input type="text" name="end_date" required id="id_end_date">
+    </p>
+    <p>
+      <label for="id_phase">Phase:</label>
+      <select name="phase" id="id_phase">
+      {% for project_phase in project_phase_list %}
+        <option value="{{ project_phase.pk }}">{{ project_phase.phase }}</option>
+      {% endfor %}
+      </select>
+    </p>
+    <p>マネジメント：
+      {% for manager in manager_list  %}
+      <label><input type="checkbox" name="manager[]" value="{{ manager.pk }}">{{ manager.username }}</label>
+      {% endfor %}
+    </p>
+
+    <p>スタッフ：
+      {% for staff in staff_list  %}
+      <label><input type="checkbox" name="staff[]" value="{{ staff.pk }}">{{ staff.username }}</label>
+      {% endfor %}
+    </p>
+    <!-- {{ form.as_p }} -->
+    <input type="submit" value="追加">
+  </form>
 </div>
 {% endblock content %}

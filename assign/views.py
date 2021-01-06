@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User
 from users.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Notification, Project
+from .models import Notification, ProjectPhase, Project
 from django.contrib.auth.decorators import login_required
+from . import forms
+
 
 # Create your views here.
 
@@ -63,7 +65,25 @@ def project_detailfunc(request, pk):
 
 @login_required
 def project_addfunc(request):
-    return render(request, 'project_add.html')
+    # print('=========================')
+    # print(tuple(ProjectPhase.objects.all()))
+    # print('=========================')
+    # form = forms.ProjectForm()
+
+    # if request.method == 'POST':
+    #     form = forms.ProjectForm(request.POST)
+
+    # return render(request, 'project_add.html', {'form': form})
+
+    project_phase_list = ProjectPhase.objects.all()
+    manager_list = User.objects.filter(is_management=True)
+    staff_list = User.objects.filter(is_management=False)
+
+    return render(request, 'project_add.html', {
+        'project_phase_list': project_phase_list,
+        'manager_list': manager_list,
+        'staff_list': staff_list,
+        })
 
 
 @login_required
