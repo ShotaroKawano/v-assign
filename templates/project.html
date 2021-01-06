@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% endblock customcss %}
+
+{% block header %}
+<div class="alert alert-primary" role="alert">
+  <h1>案件リスト</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+  {% for project in project_list %}
+  <div class="alert alert-success" role="alert">
+    <p>{{ project.name }} [{{ project.start_date }} - {{ project.end_date }}] {{ project.phase }}</p>
+    <a href="#" class="btn btn-primary btn active" role="button" aria-pressed="true">完了</a>
+  </div>
+  {% endfor %}
+  <a href="{% url 'logout' %}">ログアウト</a>
+</div>
+{% endblock content %}

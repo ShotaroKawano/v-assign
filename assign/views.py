@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User
 from users.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Notification
+from .models import Notification, Project
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -42,6 +42,12 @@ def menufunc(request):
 def notificationfunc(request):
     notification_list = Notification.objects.all()
     return render(request, 'notification.html', {'notification_list': notification_list})
+
+
+@login_required
+def projectfunc(request):
+    project_list = Project.objects.all()
+    return render(request, 'project.html', {'project_list': project_list})
 
 
 def logoutfunc(request):
