@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User
 from users.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Notification, ProjectPhase, Project
+from .models import Notification, ProjectPhase, Project, ProjectMember
 from django.contrib.auth.decorators import login_required
 from . import forms
 
@@ -65,25 +65,42 @@ def project_detailfunc(request, pk):
 
 @login_required
 def project_addfunc(request):
-    # print('=========================')
-    # print(tuple(ProjectPhase.objects.all()))
-    # print('=========================')
-    # form = forms.ProjectForm()
+    if request.method == 'GET':
+        project_phase_list = ProjectPhase.objects.all()
+        manager_list = User.objects.filter(is_management=True)
+        staff_list = User.objects.filter(is_management=False)
 
-    # if request.method == 'POST':
-    #     form = forms.ProjectForm(request.POST)
+        return render(request, 'project_add.html', {
+            'project_phase_list': project_phase_list,
+            'manager_list': manager_list,
+            'staff_list': staff_list,
+            })
 
-    # return render(request, 'project_add.html', {'form': form})
+    if request.method == 'POST':
+        # リクエストから入力値を取得
+        name = request.POST['name']
+        start_date = request.POST['start_date']
+        end_date = request.POST['end_date']
+        phase = request.POST['phase']
+        manager =  request.POST.getlist('manager')
+        staff = request.POST.getlist('staff')
 
-    project_phase_list = ProjectPhase.objects.all()
-    manager_list = User.objects.filter(is_management=True)
-    staff_list = User.objects.filter(is_management=False)
+        # 案件×マネージャーでProjectMemberに保存
+        project_object = Project(name=name, start_date=start_date, end_date=end_date, phase_id=phase)
+        project_object.save()
 
-    return render(request, 'project_add.html', {
-        'project_phase_list': project_phase_list,
-        'manager_list': manager_list,
-        'staff_list': staff_list,
-        })
+        # 案件×マネージャーでProjectMemberに保存
+        for p in manager:
+            ProjectMember.objects.create(project=project_object, user_id=p)
+
+        # 案件×スタッフでProjectMemberに保存
+        for p in staff:
+            ProjectMember.objects.create(project=project_object, user_id=p)
+
+        # 案件のリストを取得
+        project_list = Project.objects.all()
+
+        return render(request, 'project.html', {'project_list': project_list})
 
 
 @login_required

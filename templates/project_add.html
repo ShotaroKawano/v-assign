@@ -26,19 +26,19 @@
       <label for="id_phase">Phase:</label>
       <select name="phase" id="id_phase">
       {% for project_phase in project_phase_list %}
-        <option value="{{ project_phase.pk }}">{{ project_phase.phase }}</option>
+        <option value={{ project_phase.pk }}>{{ project_phase.phase }}</option>
       {% endfor %}
       </select>
     </p>
     <p>マネジメント：
       {% for manager in manager_list  %}
-      <label><input type="checkbox" name="manager[]" value="{{ manager.pk }}">{{ manager.username }}</label>
+      <label><input type="checkbox" name="manager" value={{ manager.pk }}>{{ manager.username }}</label>
       {% endfor %}
     </p>
 
     <p>スタッフ：
       {% for staff in staff_list  %}
-      <label><input type="checkbox" name="staff[]" value="{{ staff.pk }}">{{ staff.username }}</label>
+      <label><input type="checkbox" name="staff" value={{ staff.pk }}>{{ staff.username }}</label>
       {% endfor %}
     </p>
     <!-- {{ form.as_p }} -->
