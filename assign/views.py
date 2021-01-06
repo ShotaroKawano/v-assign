@@ -34,9 +34,14 @@ def loginfunc(request):
 
 
 @login_required
-def listfunc(request):
-    object_list = Notification.objects.all()
-    return render(request, 'list.html', {'object_list': object_list})
+def menufunc(request):
+    return render(request, 'menu.html')
+
+
+@login_required
+def notificationfunc(request):
+    notification_list = Notification.objects.all()
+    return render(request, 'notification.html', {'notification_list': notification_list})
 
 
 def logoutfunc(request):

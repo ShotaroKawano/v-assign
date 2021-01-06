@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% endblock customcss %}
+
+{% block header %}
+<div class="alert alert-primary" role="alert">
+  <h1>メニュー</h1>
+  <a href="{% url 'logout' %}">ログアウト</a>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+  <a href="{% url 'notification' %}">
+    <div class="alert alert-success" role="alert">通知</div>
+  </a>
+  <a href="#">
+    <div class="alert alert-success" role="alert">案件管理</div>
+  </a>
+  <a href="#">
+    <div class="alert alert-success" role="alert">メンバー管理</div>
+  </a>
+  <a href="#">
+    <div class="alert alert-success" role="alert">勤怠実績</div>
+  </a>
+</div>
+{% endblock content %}

@@ -1,11 +1,12 @@
 from django.urls import path, include
-from .views import signupfunc, loginfunc, listfunc, logoutfunc, detailfunc
+from .views import signupfunc, loginfunc, logoutfunc, menufunc, notificationfunc, projectfunc, detailfunc
 
 
 urlpatterns = [
     path('signup/', signupfunc, name='signup'),
     path('login/', loginfunc, name='login'),
-    path('list/', listfunc, name='list'),
     path('logout/', logoutfunc, name='logout'),
+    path('menu/', menufunc, name='menu'),
+    path('notification/', notificationfunc, name='notification'),
     path('detail/<int:pk>', detailfunc, name='detail'),
 ]

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% endblock customcss %}
+
+{% block header %}
+<div class="alert alert-primary" role="alert">
+  <h1>通知リスト</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+  {% for notification in notification_list %}
+  <div class="alert alert-success" role="alert">
+    <p>[Alert] {{ notification.content }}</p>
+    <a href="#" class="btn btn-primary btn active" role="button" aria-pressed="true">完了</a>
+  </div>
+  {% endfor %}
+  <a href="{% url 'logout' %}">ログアウト</a>
+</div>
+{% endblock content %}
