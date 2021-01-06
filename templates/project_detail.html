@@ -4,15 +4,57 @@
 {% endblock customcss %}
 
 {% block header %}
-<div class="alert alert-primary" role="alert">
-  <h1>案件詳細</h1>
-</div>
+<h1>案件追加</h1>
 {% endblock header %}
 
 {% block content %}
 <div class="container">
-  <div class="alert alert-success" role="alert">
-    <p>{{ project.name }} [{{ project.start_date }} - {{ project.end_date }}] {{ project.phase }}</p>
-  </div>
+  <form action="" method="POST">{% csrf_token %}
+    <p>
+      <label for="id_name">Name:</label>
+      <input type="text" name="name" required id="id_name" value="{{ project.name }}">
+    </p>
+    <p>
+      <label for="id_start_date">Start date:</label>
+      <input type="text" name="start_date" required id="id_start_date" value="{{ project.start_date }}">
+    </p>
+    <p>
+      <label for="id_end_date">End date:</label>
+      <input type="text" name="end_date" required id="id_end_date" value="{{ project.end_date }}">
+    </p>
+    <p>
+      <label for="id_phase">Phase:</label>
+      <select name="phase" id="id_phase">
+        {% for project_phase in project_phase_list %}
+        {% if project_phase.pk == project.phase_id  %}
+        <option selected value={{ project_phase.pk }}>{{ project_phase.phase }}</option>
+        {% else %}
+        <option value={{ project_phase.pk }}>{{ project_phase.phase }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </p>
+    <p>マネジメント：
+      {% for manager in manager_list  %}
+      {% if manager in project_manager_list %}
+      <label><input checked type="checkbox" name="manager" value={{ manager.pk }}>{{ manager.username }}</label>
+      {% else %}
+      <label><input type="checkbox" name="manager" value={{ manager.pk }}>{{ manager.username }}</label>
+      {% endif %}
+      {% endfor %}
+    </p>
+
+    <p>スタッフ：
+      {% for staff in staff_list  %}
+      {% if staff in project_staff_list %}
+      <label><input checked type="checkbox" name="staff" value={{ staff.pk }}>{{ staff.username }}</label>
+      {% else %}
+      <label><input type="checkbox" name="staff" value={{ staff.pk }}>{{ staff.username }}</label>
+      {% endif %}
+      {% endfor %}
+    </p>
+    <!-- {{ form.as_p }} -->
+    <input type="submit" value="保存">
+  </form>
 </div>
 {% endblock content %}

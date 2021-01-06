@@ -59,8 +59,23 @@ def projectfunc(request):
 
 @login_required
 def project_detailfunc(request, pk):
-    project = Project.objects.get(pk=pk)
-    return render(request, 'project_detail.html', {'project': project})
+    if request.method == 'GET':
+        # 詳細画面に渡すObjectを取得
+        project_phase_list = ProjectPhase.objects.all()
+        project = Project.objects.get(pk=pk)
+        manager_list = User.objects.filter(is_management=True)
+        staff_list = User.objects.filter(is_management=False)
+        project_manager_list = project.user.filter(is_management=True)
+        project_staff_list = project.user.filter(is_management=False)
+
+        return render(request, 'project_detail.html', {
+            'project_phase_list': project_phase_list,
+            'project': project,
+            'manager_list': manager_list,
+            'staff_list': staff_list,
+            'project_manager_list': project_manager_list,
+            'project_staff_list': project_staff_list,
+            })
 
 
 @login_required
