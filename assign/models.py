@@ -4,6 +4,7 @@ from users.models import User
 # Create your models here.
 
 class Notification(models.Model):
+    """通知"""
     content = models.CharField(max_length=200)
     is_checked = models.BooleanField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -15,6 +16,7 @@ class Notification(models.Model):
 
 
 class ProjectPhase(models.Model):
+    """案件のフェーズ"""
     phase = models.CharField(max_length=20)
 
     def __str__(self):
@@ -22,6 +24,7 @@ class ProjectPhase(models.Model):
 
 
 class Project(models.Model):
+    """案件"""
     name = models.CharField(max_length=200)
     start_date = models.CharField(max_length=10)
     end_date = models.CharField(max_length=10)
@@ -38,6 +41,7 @@ class Project(models.Model):
 
 
 class ProjectMember(models.Model):
+    """案件×メンバー"""
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_management = models.BooleanField()
@@ -48,6 +52,7 @@ class ProjectMember(models.Model):
 
 
 class MonthlyWorkingTime(models.Model):
+    """月次の稼働時間の予定と実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
     target_month = models.CharField(max_length=10)
     planed_working_time = models.IntegerField()
@@ -60,6 +65,7 @@ class MonthlyWorkingTime(models.Model):
 
 
 class DailyWorkingTime(models.Model):
+    """日次の稼働時間の実績"""
     project_member = models.ForeignKey(ProjectMember, default=0, on_delete=models.CASCADE)
     target_day = models.CharField(max_length=10)
     target_month = models.CharField(max_length=10)
