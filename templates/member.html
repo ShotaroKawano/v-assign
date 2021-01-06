@@ -12,7 +12,7 @@
   {% for member in member_list %}
   <div class="alert alert-success" role="alert">
     <p>{{ member.username }}</p>
-    <a href="{% url 'member_resource' member.pk %}" class="btn btn-primary btn active" role="button" aria-pressed="true">詳細</a>
+    <a href="{% url 'member_resource' member.pk %}" class="btn btn-primary btn active" role="button" aria-pressed="true">稼働状況</a>
   </div>
   {% endfor %}
 </div>
