@@ -6,6 +6,8 @@ from .models import Notification, ProjectPhase, Project, ProjectMember, MonthlyW
 from django.contrib.auth.decorators import login_required
 from . import forms
 import datetime
+from dateutil.relativedelta import relativedelta
+from monthdelta import monthmod
 
 
 # Create your views here.
@@ -68,6 +70,9 @@ def project_detailfunc(request, pk):
         staff_list = User.objects.filter(is_management=False)
         project_manager_list = project.user.filter(is_management=True)
         project_staff_list = project.user.filter(is_management=False)
+        # 年月表示に修正
+        project.start_date = project.start_date.strftime('%Y-%m-%d')[:-3]
+        project.end_date = project.end_date.strftime('%Y-%m-%d')[:-3]
 
         return render(request, 'project_detail.html', {
             'project_phase_list': project_phase_list,
@@ -203,12 +208,33 @@ def project_resourcefunc(request, pk):
     start_date = project.start_date
     end_date = project.end_date
 
+    # print(type(start_date))
+    # print(type(end_date))
+
+    # diff_month = (end_date - start_date).days + 1
+    # print(diff_month)
+
+    # ２つの日付の差を、月単位/年単位で求める -----------
+    mmod = monthmod(start_date, end_date)
+    # 月数差（余りは切り捨て）
+    month_delta = mmod[0].months + 1
+    print(month_delta)
+
+    project_month_list = []
+    for i in range(month_delta):
+        # datelist.append(start_date + relativedelta(months=i))
+        project_month_list.append((start_date + relativedelta(months=i)).strftime('%Y-%m-%d')[:-3])
+
+    print('#####')
+    print(project_month_list)
+
+
     monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
     return render(request, 'project_resource.html', {
         'project': project,
         # 'member_list': member_list,
         'monthly_working_time_list': monthly_working_time_list,
-        # 'project_month_list': project_month_list,
+        'project_month_list': project_month_list,
         })
 
 
