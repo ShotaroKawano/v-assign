@@ -61,6 +61,7 @@ def projectfunc(request):
     return render(request, 'project.html', {'project_list': project_list})
 
 
+# TODO: 案件期間とメンバーの変更時の警告とMonthlyWorkingTimeの追加・削除
 @login_required
 def project_detailfunc(request, pk):
     if request.method == 'GET':
@@ -224,24 +225,65 @@ def project_addfunc(request):
 @login_required
 def project_resourcefunc(request, pk):
     project = Project.objects.get(pk=pk)
-    # member_list = project.user.all()
     project_member_list = ProjectMember.objects.filter(project_id=project.id)
     project_member_id_list = [item.id for item in project_member_list]
     start_date = project.start_date
     end_date = project.end_date
 
+    # 開始月と終了月の表示を年月に変更
+    project.start_date = start_date.strftime('%Y-%m-%d')[:-3]
+    project.end_date = start_date.strftime('%Y-%m-%d')[:-3]
+
     project_month_list = get_project_month(start_date, end_date, 'year_month')
 
-    monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
-    for monthly_working_time in monthly_working_time_list:
-        monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+    if request.method == 'GET':
 
-    return render(request, 'project_resource.html', {
-        'project': project,
-        'project_member_list': project_member_list,
-        'monthly_working_time_list': monthly_working_time_list,
-        'project_month_list': project_month_list,
-        })
+        monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+        for monthly_working_time in monthly_working_time_list:
+            monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+
+        return render(request, 'project_resource.html', {
+            'project': project,
+            'project_member_list': project_member_list,
+            'monthly_working_time_list': monthly_working_time_list,
+            'project_month_list': project_month_list,
+            })
+
+    if request.method == 'POST':
+
+        # 保存処理
+        # print(request.POST)
+        updated_list = request.POST['updated_list']
+        if updated_list:
+            updated_list = updated_list.split(',')
+
+            print(updated_list)
+            for item in updated_list:
+                print(item)
+                print(item.split('_'))
+                update = item.split('_')
+
+                # 更新対象のMonthlyWorkingTimeを取得
+                monthly_working_time = MonthlyWorkingTime.objects.get(project_member=update[0], target_month=update[1]+'-01')
+                print('###')
+                print(update[2])
+                if update[2] == 'planed':
+                    monthly_working_time.planed_working_time = request.POST[item]
+                else:
+                    monthly_working_time.actual_working_time = request.POST[item]
+                monthly_working_time.save()
+
+        monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+        for monthly_working_time in monthly_working_time_list:
+            monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+
+        return render(request, 'project_resource.html', {
+            'project': project,
+            'project_member_list': project_member_list,
+            'monthly_working_time_list': monthly_working_time_list,
+            'project_month_list': project_month_list,
+            })
+
 
 
 @login_required
@@ -267,7 +309,7 @@ def get_project_month(start_date, end_date, format=None):
     mmod = monthmod(start_date, end_date)
     # 月数差（余りは切り捨て）
     month_delta = mmod[0].months + 1
-    print(month_delta)
+    # print(month_delta)
 
     project_month_list = []
     if format == 'year_month':
@@ -278,5 +320,5 @@ def get_project_month(start_date, end_date, format=None):
             project_month_list.append((start_date + relativedelta(months=i)).strftime('%Y-%m-%d'))
 
 
-    print(project_month_list)
+    # print(project_month_list)
     return project_month_list
