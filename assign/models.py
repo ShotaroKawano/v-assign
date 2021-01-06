@@ -39,7 +39,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name + ' [' + self.start_date + '-' + self.end_date + '] '
+        return self.name + ' [' + self.start_date.strftime('%Y-%m-%d')[:-3] + '-' + self.end_date.strftime('%Y-%m-%d')[:-3] + '] '
 
 
 class ProjectMember(models.Model):
@@ -71,7 +71,7 @@ class MonthlyWorkingTime(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.project_member.project.name + ' | ' + self.project_member.user.username + ' | ' + self.target_month
+        return self.project_member.project.name + ' | ' + self.project_member.user.username + ' | ' + self.target_month.strftime('%Y-%m-%d')[:-3]
 
 
 class DailyWorkingTime(models.Model):
@@ -84,4 +84,4 @@ class DailyWorkingTime(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.project_member + self.target_month + self.target_day
+        return self.project_member + self.target_month.strftime('%Y-%m-%d')[:-3] + self.target_day.strftime('%Y-%m-%d')

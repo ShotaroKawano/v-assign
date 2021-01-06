@@ -6,6 +6,7 @@ from .models import Notification, ProjectPhase, Project, ProjectMember, MonthlyW
 from django.contrib.auth.decorators import login_required
 from . import forms
 import datetime
+from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from monthdelta import monthmod
 
@@ -182,17 +183,38 @@ def project_addfunc(request):
         manager =  request.POST.getlist('manager')
         staff = request.POST.getlist('staff')
 
-        # 案件×マネージャーでProjectMemberに保存
+        project_month_list = get_project_month(
+            dt.strptime(start_date, '%Y-%m-%d'),
+            dt.strptime(end_date, '%Y-%m-%d'),
+        )
+
+        # 案件を保存
         project = Project(name=name, start_date=start_date, end_date=end_date, phase_id=phase)
         project.save()
 
         # 案件×マネージャーでProjectMemberに保存
         for p in manager:
-            ProjectMember.objects.create(project=project, user_id=p)
+            project_member = ProjectMember.objects.create(project=project, user_id=p)
+            # ProjectMemberごとにMonthlyWorkingTimeを一旦0埋め
+            for pm in project_month_list:
+                monthly_working_time = MonthlyWorkingTime(
+                    project_member=project_member,
+                    target_month=pm,
+                    planed_working_time=0,
+                    actual_working_time=0)
+                monthly_working_time.save()
 
         # 案件×スタッフでProjectMemberに保存
         for p in staff:
-            ProjectMember.objects.create(project=project, user_id=p)
+            project_member = ProjectMember.objects.create(project=project, user_id=p)
+            # ProjectMemberごとにMonthlyWorkingTimeを一旦0埋め
+            for pm in project_month_list:
+                monthly_working_time = MonthlyWorkingTime(
+                    project_member=project_member,
+                    target_month=pm,
+                    planed_working_time=0,
+                    actual_working_time=0)
+                monthly_working_time.save()
 
         # 案件リストを取得して案件リスト画面にリダイレクト
         project_list = Project.objects.all()
@@ -208,31 +230,15 @@ def project_resourcefunc(request, pk):
     start_date = project.start_date
     end_date = project.end_date
 
-    # print(type(start_date))
-    # print(type(end_date))
-
-    # diff_month = (end_date - start_date).days + 1
-    # print(diff_month)
-
-    # ２つの日付の差を、月単位/年単位で求める -----------
-    mmod = monthmod(start_date, end_date)
-    # 月数差（余りは切り捨て）
-    month_delta = mmod[0].months + 1
-    print(month_delta)
-
-    project_month_list = []
-    for i in range(month_delta):
-        # datelist.append(start_date + relativedelta(months=i))
-        project_month_list.append((start_date + relativedelta(months=i)).strftime('%Y-%m-%d')[:-3])
-
-    print('#####')
-    print(project_month_list)
-
+    project_month_list = get_project_month(start_date, end_date, 'year_month')
 
     monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+    for monthly_working_time in monthly_working_time_list:
+        monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+
     return render(request, 'project_resource.html', {
         'project': project,
-        # 'member_list': member_list,
+        'project_member_list': project_member_list,
         'monthly_working_time_list': monthly_working_time_list,
         'project_month_list': project_month_list,
         })
@@ -253,3 +259,24 @@ def member_resourcefunc(request, pk):
 @login_required
 def working_timefunc(request):
     return render(request, 'working_time.html')
+
+
+#  共通関数
+def get_project_month(start_date, end_date, format=None):
+    # ２つの日付の差を、月単位/年単位で求める -----------
+    mmod = monthmod(start_date, end_date)
+    # 月数差（余りは切り捨て）
+    month_delta = mmod[0].months + 1
+    print(month_delta)
+
+    project_month_list = []
+    if format == 'year_month':
+        for i in range(month_delta):
+            project_month_list.append((start_date + relativedelta(months=i)).strftime('%Y-%m-%d')[:-3])
+    else:
+        for i in range(month_delta):
+            project_month_list.append((start_date + relativedelta(months=i)).strftime('%Y-%m-%d'))
+
+
+    print(project_month_list)
+    return project_month_list

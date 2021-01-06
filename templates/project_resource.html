@@ -12,16 +12,31 @@
   <div class="alert alert-success" role="alert">
     <p>{{ project.name }} [{{ project.start_date }} - {{ project.end_date }}] {{ project.phase }}</p>
   </div>
-  <!-- {% for member in member_list %}
-  {{ member.username }}
-  {% endfor %} -->
-  {% for monthly_working_time in monthly_working_time_list %}
-  {{ monthly_working_time.target_month }}
-  {% endfor %}
-
-  {% for project_month in project_month_list %}
-  {{ project_month }}
-  {% endfor %}
-
+  <!-- TODO: 後でcssで真ん中寄せ -->
+  <table border="1" align="center">
+    <tr align="center">
+      <th width="100" rowspan="2">月</th>
+      {% for project_month in project_month_list %}
+      <th colspan="2">{{ project_month }}</th>
+      {% endfor %}
+    </tr>
+    <tr align="center">
+      {% for project_month in project_month_list %}
+      <th width="50">予定</th>
+      <th width="50">実績</th>
+      {% endfor %}
+    </tr>
+    {% for project_member in project_member_list %}
+    <tr align="center">
+      <th>{{ project_member.user.username }}</th>
+      {% for monthly_working_time in monthly_working_time_list %}
+      {% if monthly_working_time.project_member.user == project_member.user %}
+      <td>{{ monthly_working_time.planed_working_time }}</td>
+      <td>{{ monthly_working_time.actual_working_time }}</td>
+      {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
   {% endblock content %}
 </div>
