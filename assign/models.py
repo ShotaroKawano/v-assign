@@ -44,11 +44,19 @@ class ProjectMember(models.Model):
     """案件×メンバー"""
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_management = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["project", "user"],
+                name="project_member_unique"
+            ),
+        ]
+
+
     def __str__(self):
-        return self.project + self.user
+        return self.project.name + '|' + self.user.username
 
 
 class MonthlyWorkingTime(models.Model):
