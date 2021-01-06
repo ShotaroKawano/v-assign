@@ -77,6 +77,83 @@ def project_detailfunc(request, pk):
             'project_staff_list': project_staff_list,
             })
 
+    if request.method == 'POST':
+        # リクエストから入力値を取得
+        name = request.POST['name']
+        start_date = request.POST['start_date']
+        end_date = request.POST['end_date']
+        phase = request.POST['phase']
+        manager = request.POST.getlist('manager')
+        staff = request.POST.getlist('staff')
+
+        input_manager = [int(s) for s in manager]
+        input_staff = [int(s) for s in staff]
+
+        # 入力情報で案件を更新
+        project = Project.objects.get(pk=pk)
+        project.name = name
+        project.start_date = start_date
+        project.end_date = end_date
+        project.phase_id = phase
+        project.save()
+
+        # DBに保存されているProjectMemberを取得
+        project_manager_list = project.user.filter(is_management=True)
+        project_staff_list = project.user.filter(is_management=False)
+
+        # idだけを抽出してリストを作成
+        existing_manager = [item.id for item in project_manager_list]
+        existing_staff = [item.id for item in project_staff_list]
+
+        add_list = []
+        delete_list = []
+
+        #                 入力
+        #           | True | False
+        #      ---------------------
+        #      True | None | Delete
+        # 既存 ---------------------
+        #      False| Add  | None
+        #
+        # をマネージャーとスタッフで×2
+
+        for m in input_manager:
+            if m not in existing_manager:
+                add_list.append(m)
+
+        for m in existing_manager:
+            if m not in input_manager:
+                delete_list.append(m)
+
+        for s in input_staff:
+            if s not in existing_staff:
+                add_list.append(s)
+
+        for s in existing_staff:
+            if m not in input_staff:
+                delete_list.append(s)
+
+        print(input_manager)
+        print(input_staff)
+        print(existing_manager)
+        print(existing_staff)
+        print(add_list)
+        print(delete_list)
+
+        # ProjectMemberに保存
+        for p in add_list:
+            ProjectMember.objects.create(project=project, user_id=p)
+
+        # ProjectMemberから削除
+        for p in delete_list:
+            # ProjectMember.objects.delete(project=project, user_id=p)
+            project.user.remove(p)
+
+        # 案件リストを取得して案件リスト画面にリダイレクト
+        project_list = Project.objects.all()
+        return render(request, 'project.html', {'project_list': project_list})
+
+
 
 @login_required
 def project_addfunc(request):
@@ -101,20 +178,19 @@ def project_addfunc(request):
         staff = request.POST.getlist('staff')
 
         # 案件×マネージャーでProjectMemberに保存
-        project_object = Project(name=name, start_date=start_date, end_date=end_date, phase_id=phase)
-        project_object.save()
+        project = Project(name=name, start_date=start_date, end_date=end_date, phase_id=phase)
+        project.save()
 
         # 案件×マネージャーでProjectMemberに保存
         for p in manager:
-            ProjectMember.objects.create(project=project_object, user_id=p)
+            ProjectMember.objects.create(project=project, user_id=p)
 
         # 案件×スタッフでProjectMemberに保存
         for p in staff:
-            ProjectMember.objects.create(project=project_object, user_id=p)
+            ProjectMember.objects.create(project=project, user_id=p)
 
-        # 案件のリストを取得
+        # 案件リストを取得して案件リスト画面にリダイレクト
         project_list = Project.objects.all()
-
         return render(request, 'project.html', {'project_list': project_list})
 
 
