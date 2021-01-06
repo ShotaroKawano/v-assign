@@ -17,8 +17,12 @@
 </head>
 
 <body>
-  {% block header %}
-  {% endblock header %}
+  <div class="alert alert-primary" role="alert">
+    <a href="{% url 'menu' %}"><div>V-assign</div></a>
+    {% block header %}
+    {% endblock header %}
+    <a href="{% url 'logout' %}">ログアウト</a>
+  </div>
 
   {% block content %}
   {% endblock content %}

@@ -49,6 +49,11 @@ def projectfunc(request):
     project_list = Project.objects.all()
     return render(request, 'project.html', {'project_list': project_list})
 
+@login_required
+def project_detailfunc(request, pk):
+    project = Project.objects.get(pk=pk)
+    return render(request, 'project_detail.html', {'project': project})
+
 
 def logoutfunc(request):
     logout(request)

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import signupfunc, loginfunc, logoutfunc, menufunc, notificationfunc, projectfunc, detailfunc
+from .views import signupfunc, loginfunc, logoutfunc, menufunc, notificationfunc, projectfunc, project_detailfunc, detailfunc
 
 
 urlpatterns = [
@@ -9,5 +9,6 @@ urlpatterns = [
     path('menu/', menufunc, name='menu'),
     path('notification/', notificationfunc, name='notification'),
     path('project/', projectfunc, name='project'),
+    path('project/<int:pk>', project_detailfunc, name='project_detail'),
     path('detail/<int:pk>', detailfunc, name='detail'),
 ]
