@@ -1,1 +1,1 @@
-web: gunicorn vassign.wsgi --log-file
+web: gunicorn vassign.wsgi --log-file -
