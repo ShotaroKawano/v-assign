@@ -26,7 +26,7 @@ SECRET_KEY = 'w$*37gx)aqlugf-6*ymzb%r*sq)x#hov%b27=3r*_rtcx4k3#p'
 # DEBUG = False
 DEBUG = True
 
-ALLOWED_HOSTS = ['v-assign.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','v-assign.herokuapp.com']
 
 
 # Application definition
@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'vassign.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 
 # Password validation
