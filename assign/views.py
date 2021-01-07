@@ -9,6 +9,7 @@ import datetime
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
 from monthdelta import monthmod
+import json
 
 
 # Create your views here.
@@ -58,6 +59,10 @@ def notificationfunc(request):
 @login_required
 def projectfunc(request):
     project_list = Project.objects.all()
+    for project in project_list:
+        # 開始月と終了月の表示を年月に変更
+        project.start_date = project.start_date.strftime('%Y-%m-%d')[:-3]
+        project.end_date = project.end_date.strftime('%Y-%m-%d')[:-3]
     return render(request, 'project.html', {'project_list': project_list})
 
 
@@ -224,29 +229,68 @@ def project_addfunc(request):
 
 @login_required
 def project_resourcefunc(request, pk):
-    project = Project.objects.get(pk=pk)
-    project_member_list = ProjectMember.objects.filter(project_id=project.id)
-    project_member_id_list = [item.id for item in project_member_list]
-    start_date = project.start_date
-    end_date = project.end_date
-
-    # 開始月と終了月の表示を年月に変更
-    project.start_date = start_date.strftime('%Y-%m-%d')[:-3]
-    project.end_date = start_date.strftime('%Y-%m-%d')[:-3]
-
-    project_month_list = get_project_month(start_date, end_date, 'year_month')
 
     if request.method == 'GET':
+        # 案件情報の取得
+        project = Project.objects.get(pk=pk)
+        project_member_list = ProjectMember.objects.filter(project_id=project.id)
+        # print(project_member_list[0].user.username)
+        project_member_id_list = [item.id for item in project_member_list]
+        start_date = project.start_date
+        end_date = project.end_date
 
+        # 開始月と終了月の表示を年月に変更
+        project.start_date = start_date.strftime('%Y-%m-%d')[:-3]
+        project.end_date = start_date.strftime('%Y-%m-%d')[:-3]
+
+        # 開始月と終了月から年月リストを取得
+        project_month_list = get_project_month(start_date, end_date, 'year_month')
+
+        # 案件稼働時間を取得
         monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+        # Date型を年月に修正
+        result=[]
         for monthly_working_time in monthly_working_time_list:
             monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+
+            # d = dict(monthly_working_time.target_month=int(monthly_working_time.planed_working_time - monthly_working_time.actual_working_time))
+            # diff = {monthly_working_time.target_month: {monthly_working_time.project_member.user.username: int(monthly_working_time.planed_working_time - monthly_working_time.actual_working_time)}}
+
+            # 稼働時間の予定と実績の差分をリストに格納
+            list = [monthly_working_time.target_month, monthly_working_time.project_member.user.username, int(monthly_working_time.planed_working_time - monthly_working_time.actual_working_time)]
+            # result.append(diff)
+            result.append(list)
+            # statistics=dict()
+            # statistics = {monthly_working_time.project_member.user: d}
+            # statistics[monthly_working_time.project_member.user].append(diff)
+            # print(diff)
+            print(result)
+
+        # from django.db import connection
+        # with connection.cursor() as cursor:
+        #     cursor.execute("select username, target_month, (planed_working_time - actual_working_time ) from assign_monthlyworkingtime am left outer join assign_projectmember ap on am.project_member_id = ap.id left outer join users_user uu on ap.user_id = uu.id where ap.project_id = %s", [str(pk)])
+        #     result = cursor.fetchall()
+        #     for data in result:
+        #         print(data)
+
+        # from django.core.serializers import serialize
+        # order_items = OrderItem.objects.filter(order=Order.objects.latest('id'))
+        # order_items = serialize('json', project_member_list, fields=['id', 'product', 'price'])  # the fields needed for products
+        #  = serialize('json', project_member_list, fields=['id', 'username'])  # the fields needed for products
+        # j_project_member_list = [i['user'] for i in project_member_list.values('user')]
+
+        # メンバー名のリストを作成
+        j_project_member_list = []
+        for project_member in project_member_list:
+            j_project_member_list.append(project_member.user.username)
 
         return render(request, 'project_resource.html', {
             'project': project,
             'project_member_list': project_member_list,
+            'j_project_member_list': j_project_member_list,
             'monthly_working_time_list': monthly_working_time_list,
             'project_month_list': project_month_list,
+            'result': result
             })
 
     if request.method == 'POST':
@@ -273,16 +317,17 @@ def project_resourcefunc(request, pk):
                     monthly_working_time.actual_working_time = request.POST[item]
                 monthly_working_time.save()
 
-        monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
-        for monthly_working_time in monthly_working_time_list:
-            monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
+        # monthly_working_time_list = MonthlyWorkingTime.objects.filter(project_member_id__in=project_member_id_list)
+        # for monthly_working_time in monthly_working_time_list:
+        #     monthly_working_time.target_month = monthly_working_time.target_month.strftime('%Y-%m-%d')[:-3]
 
-        return render(request, 'project_resource.html', {
-            'project': project,
-            'project_member_list': project_member_list,
-            'monthly_working_time_list': monthly_working_time_list,
-            'project_month_list': project_month_list,
-            })
+        return redirect('project_resource', pk=pk)
+        # return render(request, 'project_resource.html', {
+        #     'project': project,
+        #     'project_member_list': project_member_list,
+        #     'monthly_working_time_list': monthly_working_time_list,
+        #     'project_month_list': project_month_list,
+        #     })
 
 
 

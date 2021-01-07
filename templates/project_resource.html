@@ -59,9 +59,116 @@
     <input type="text" name="updated_list" id="updated_list" hidden>
     <input type="submit" value="更新">
   </form>
+  <p>
+    <canvas id="myChart" width="600" height="400">お使いのブラウザはcanvasに対応していません。</canvas>
+  </p>
 </div>
 {% endblock content %}
 
 {% block script %}
 <script src="{% static 'project_resource.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+<script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
+<script>
+  {% autoescape off %}
+  var result = {{ result }}
+  var project_month_list = {{ project_month_list }}
+  // var project_member_list = {{ project_member_list }}
+  var j_project_member_list = {{ j_project_member_list }}
+  {% endautoescape %}
+  // console.log(result)
+  // console.log(project_member_list)
+  // console.log(j_project_member_list)
+  // product = JSON.parse('{{ order_items | safe }}')
+
+  // const data = JSON.parse('{{ j_project_member_list|safe }}');
+  // console.log(data);  // [1, 2, 3]
+
+  backgroundColors = ['#121554', '#1d3681', '#2e70a7', '#4eadc7', '#a7d8bf']
+
+  var datasets = []
+  for (let index = 0; index < j_project_member_list.length; index++) {
+    const project_member = j_project_member_list[index];
+    console.log(project_member);
+    diff = []
+    result.forEach(r => {
+      if (project_member == r[1]) {
+        diff.push(r[2])
+      }
+    })
+    data = {
+      label: project_member,
+      borderWidth: 1,
+      backgroundColor: backgroundColors[index],
+      data: diff
+    }
+    datasets.push(data)
+
+
+  }
+  // for (let index = 0; index < project_month_list.length; index++) {
+  //   const project_month = project_month_list[index];
+  //   diff = []
+  //   result.forEach(r => {
+  //     console.log(r[0])
+  //     console.log(project_month);
+  //     console.log(r[0] == project_month)
+  //     if(r[0] == project_month){
+  //       diff.push(r[2])
+  //       console.log(r[1]);
+  //       // console.log(diff);
+  //     }
+  //   });
+  //   var data = {
+  //     label: project_month,
+  //     borderWidth: 1,
+  //     backgroundColor: backgroundColors[index],
+  //     data: diff
+  //   }
+  //   datasets.push(data)
+
+  // }
+  console.log('datasets');
+  console.log(datasets)
+
+  var ctx = document.getElementById("myChart");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: project_month_list,
+      datasets: datasets
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'リソース状況', //グラフの見出し
+        padding: 3
+      },
+      scales: {
+        xAxes: [{
+          stacked: true, //積み上げ棒グラフにする設定
+          categoryPercentage: 0.4 //棒グラフの太さ
+        }],
+        yAxes: [{
+          stacked: true //積み上げ棒グラフにする設定
+        }]
+      },
+      legend: {
+        labels: {
+          boxWidth: 30,
+          padding: 20 //凡例の各要素間の距離
+        },
+        display: true
+      },
+      tooltips: {
+        mode: 'label' //マウスオーバー時に表示されるtooltip
+      },
+      plugins: {
+        colorschemes: {
+          scheme: 'brewer.Paired12'
+        }
+      }
+    }
+  });
+</script>
 {% endblock script %}
